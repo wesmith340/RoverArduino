@@ -156,20 +156,4 @@ public:
     ST.motor(DIG_MOTOR, 0);
   }
 
-
-  void digCycle() // Ideally to abstract digging
-  {
-    int startTime = millis();
-    this->startMotor(50);
-    this->extend();
-
-    int timeDiff = millis()-startTime;
-    while (timeDiff < DIG_TIME){
-      delay(100);
-      timeDiff = millis()-startTime;
-    }
-    this->startMotor(10);
-    this->retract();
-    this->stopMotor();
-  }
 };

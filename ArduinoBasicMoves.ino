@@ -20,26 +20,20 @@ void setup() {
   
   Rover *rover = new Rover();
 
-  // rover->digCycle();
+  rover->forward();
+  delay(500);
+  rover->backward();
+  delay(500);
+  rover->halt();
+  delay(10000);
 
-  // delay(5000);
+  rover->digCycle(); // ideally would work good
+  delay(5000);
+  rover->depositCycle();// need hall sensor
 
-  // rover->depositCycle();
 
-// LinearActuator *actLeft = new LinearActuator(4,28,26, ACTUATOR_SPEED);
-// actLeft->extend();
-// delay(1500);
-// actLeft->halt();
-
-  // DiggingModule *digMod = new DiggingModule();
-  // digMod->retract();
-  // digMod->startMotor(1);
-  // delay(8000);
-  // digMod->stopMotor();
-
+  // All else fails go down an abstraction level
   DepositModule *depMod = new DepositModule();
-
-  
   DiggingModule *digMod = new DiggingModule();
   LinearActuator *actRight = new LinearActuator(5,29,27, round(ACTUATOR_SPEED * .85));
   LinearActuator *actLeft = new LinearActuator(4,28,26, ACTUATOR_SPEED);
@@ -48,21 +42,7 @@ void setup() {
   delay(1000);
   actRight->halt();
   actLeft->halt();
-  // // depMod->middle();
-  // // delay(1000);
-  // // depMod->bottom();
-  // // delay(1000);
-  // ST.motor(DIG_MOTOR, -30);
-  // depMod->top();
-  // delay(1000);
-  // // depMod->bottom();
-  // ST.motor(DIG_MOTOR, 0);
 }
 
 void loop() {
-  
-  // Serial.print(" ");
-  // Serial.print(actVel);
-  // Serial.print(" ");
-
 }
