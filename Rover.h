@@ -1,10 +1,15 @@
+/* 
+    Rover Class
+      - Main control for robot, highest abstraction
+*/
+
 #include "MotorController.h"
 #include "LinearActuator.h"
 #include "DepositModule.h"
 #include "DiggingModule.h"
 
 #define DIG_SPEED 1
-#define DIG_TIME 10*1000
+#define DIG_TIME 10*1000 // After fully extended dig for X seconds
 class Rover {
 
 private:
@@ -15,17 +20,10 @@ private:
   DiggingModule *digMod;
   DepositModule *depMod;
 
-  // boolean digging;
-
-  //  
-
 public:
 
   Rover() {
-
-    // MotorController(p1, a1, b1) => p1 is PWN (0->255); a1 is forward (HIGH/LOW); b1 is backward (HIGH/LOW);
-
-    frontRight = new MotorController(2,22,24);
+    frontRight = new MotorController(2,22,24); // (pwm, a, b)
     backRight = new MotorController(3,25,23);
     frontLeft = new MotorController(5,26,28);
     backLeft = new MotorController(5,27,29);
@@ -62,11 +60,9 @@ public:
     frontRight->halt();
     frontLeft->halt();
     backRight->halt();
-
-    // digMod->halt();
-    // depMod->halt();
   }
 
+  // Full dig cycle, meant for high abstraction after all code is verified
   void digCycle() {
       depMod->bottom();
       digMod->startMotor(DIG_SPEED);
@@ -77,14 +73,16 @@ public:
       while (curTime - startTime < DIG_TIME){
           curTime = millis();
       }
-      digMod->startMotor(DIG_SPEED);
+      digMod->startMotor(1); // lose the dirt
       digMod->retract();
       digMod->stopMotor();
       depMod->middle();
   }
 
   void depositCycle() {
-      digMod->startMotor(-1*DIG_SPEED);
+      digMod->startMotor(-1*DIG_SPEED); // Reverse does not work, will need to be replaced with hall sensor
+      
+      // Shake it out
       depMod->top();
       depMod->bottom();
       depMod->top();

@@ -1,9 +1,12 @@
 #define DIG_MOTOR 1
 #define ACTUATOR_SPEED 252
+
+// Hall sensors
 #define ACTL_UPSENSE 49
 #define ACTL_DOWNSENSE 46
 #define ACTR_UPSENSE 45
 #define ACTR_DOWNSENSE 42
+
 #define DIG_TIME 100000
 
 
@@ -67,15 +70,18 @@ void DIG_B_FALL(){
 }
 
 
-ISR(TIMER1_COMPA_vect)          // timer compare interrupt service routine
+ISR(TIMER1_COMPA_vect) // timer compare interrupt service routine
 {
   if (motorRunning){
     int curTime = millis();
     int curPos = digPos;
+
     actVel = (curPos-prevPos) / (curTime-prevTime)*1000/3600;
-    int error = digSpeed - actVel;                            //calcuate error term
+    int error = digSpeed - actVel;    
+
     speedSetting = int(float(speedSetting) + K_p_A*error); //calcutate new output from controller
-    speedSetting = constrain(speedSetting, -30, 30);
+    speedSetting = constrain(speedSetting, -30, 30); // Constraints so no one dies
+
     ST.motor(DIG_MOTOR, speedSetting);
     prevPos = curPos;
     prevTime = curTime;
@@ -104,8 +110,9 @@ public:
 
     actRight->extend();
     actLeft->extend();
+    
     boolean lHalt = false, rHalt = false;
-    while(lHalt == false or rHalt == false){
+    while(lHalt == false or rHalt == false){ // While one actuator is moving
       if (digitalRead(ACTR_DOWNSENSE) == LOW){
         actRight->halt();
         rHalt = true;
@@ -124,7 +131,7 @@ public:
     actRight->retract();
     actLeft->retract();
     boolean lHalt = false, rHalt = false;
-    while(lHalt == false or rHalt == false){
+    while(lHalt == false or rHalt == false){ // While one actuator is moving
       if (digitalRead(ACTR_UPSENSE) == LOW){
         actRight->halt();
         rHalt = true;
@@ -137,17 +144,20 @@ public:
     actRight->halt();
     actLeft->halt();
   }
+
   void startMotor(int speed){
     digSpeed = speed;
     prevTime = millis();
     prevPos = digPos;
-    motorRunning = true;
+    motorRunning = true; // lets interrupt go into if statement
   }
   void stopMotor(){
-    motorRunning = false;
+    motorRunning = false; // prevents interrupt from going into if statement
     ST.motor(DIG_MOTOR, 0);
   }
-  void digCycle()
+
+
+  void digCycle() // Ideally to abstract digging
   {
     int startTime = millis();
     this->startMotor(50);

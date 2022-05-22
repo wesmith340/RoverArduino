@@ -1,5 +1,5 @@
 #define DEP_BOTTOM 0
-#define TOP_OFFSET 38000
+#define TOP_OFFSET 38000 // Ticks from bottom to top
 
 int INTERRUPT_DEP_A = digitalPinToInterrupt(18);
 int INTERRUPT_DEP_B = digitalPinToInterrupt(21);
@@ -58,29 +58,9 @@ private:
   int dE, iE;
   int kp = 1, ki = 0, kd = 0;
 
-  int PID(int dP, int aP)
-  {                  // Function is used to return the PID terms for motor control with desired position and actual position as inputs
-    // error = dP - aP; // Find the error between the desired and actual positions
-
-    // dE = error - lasterror; // Change in error - Differential Component
-    // iE += error;            // Culmination of error - Integral Component
-    // // iE = constrain(iE, -50, 50);                //constrains the steady state error value
-
-    // int pid = (kp * error) + (ki * iE) + (kd * dE); // Pid term is calculated by the given equation
-    // pid = constrain(pid, -255, 255);                // Constrains the pid value to accomodate 8 bit PWM pins of Arduino
-
-    // lasterror = error; // Saves the last error to calculate the differential component
-    // return pid;        // returns the pid value as the output of the function
-
-    if (aP > dP) {
-      return 40;
-    } else {
-      return -40;
-    }
-  }
-
 public:
-  void top()
+
+  void top() // moves bucket to top
   {
     while (TOP_OFFSET - depPos > 0)
     {
@@ -88,7 +68,7 @@ public:
     }
     ST.motor(DEP_MOTOR, 0);
   }
-  void middle()
+  void middle() // Align bucket with bottom then move bucket to halfway
   {
     this->bottom();
     while (TOP_OFFSET/2 - depPos > 0)
@@ -97,7 +77,7 @@ public:
     }
     ST.motor(DEP_MOTOR, 0);
   }
-  void bottom()
+  void bottom() // moves bucket to bottom
   {
     while (depPos > 0)
     {
